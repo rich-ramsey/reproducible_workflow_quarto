@@ -1,0 +1,223 @@
+---
+title: "A tutorial on setting up a reproducible workflow in R and R Studio with Quarto"
+running-head: "Reproducible workflow with Quarto"
+author:
+  - name: Richard Ramsey
+    email: richard.ramsey@hest.ethz.ch
+    orcid: 0000-0002-0329-2112
+    url: https://www.rich.ramsey.com
+    corresponding: true
+    equal-contributor: true
+    affiliation:
+      - ref: 1
+  - name: Second Author
+    email: mail@example.com
+    orcid: 
+    url: 
+    equal-contributor: true
+    affiliation:
+      - ref: 2
+      - ref: 3
+affiliations:
+  - id: 1
+    name: ETH Zurich
+    department: Department of Health Sciences and Technology
+  - id: 2
+    name: Example Institution
+    department: Department of Examples
+  - id: 3
+    name: Example Second Institution
+    department: Department of Examples
+abstract: |
+  This is where the abstract would go.
+keywords: [these are the key words]
+bibliography: references.bib
+csl: apa.csl
+authornote: This is an example author note.
+wordcount: "{{< words-body >}}"
+format:
+  html:
+    # Inherits all settings from root _quarto.yml
+    toc: true
+    toc-depth: 3
+    fontsize: 14pt
+    mainfont: Fira Sans
+    code-fold: true
+    number-sections: true
+    citations-hover: true
+    crossrefs-hover: true
+    other-links:
+      - text: Preprint (PsyArXiv)
+        href: https://osf.io/preprints/psyarxiv/
+        icon: file-pdf
+      - text: Online supplement
+        href: https://your-username.github.io/your-repo
+        icon: globe2
+      - text: GitHub Repository
+        href: https://github.com/your-username/your-repo
+        icon: github
+      - text: OSF Repository
+        href: https://osf.io/
+        icon: archive
+  preprint-typst:
+    output-file: manuscript.pdf
+    fontsize: 11pt
+    mainfont: Libertinus Serif
+    section-numbering: "1."
+    suppress-bibliography: true
+  preprint-docx:
+    output-file: manuscript.docx
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+library(tidyverse)
+library(tinytable)
+```
+
+
+\newpage
+
+# Introduction
+
+# Methods
+We report how we determined our sample size, all data exclusions (if any), all manipulations, and all measures in the study [@simmons2012]. 
+
+## Participants
+
+## Material
+
+## Procedure
+
+## Data analysis
+
+We used R version [@R-base] for all our analyses.
+
+
+# Results
+
+## Descriptive statistics ##
+
+Raw data plots.
+
+Accuracy by condition violin plot (@fig-accuracy-plot).
+
+```{r}
+#| label: fig-accuracy-plot
+#| fig-cap: Accuracy is quite high for both types of stimuli.
+#| fig-height: 3
+#| fig-width: 7
+#| echo: false
+
+knitr::include_graphics("../exp1/figures/acc_violin.png")
+```
+
+Reaction time by condition violin plot (@fig-rt-plot).
+
+```{r}
+#| label: fig-rt-plot
+#| fig-cap: RT as a function of stimuli and conditions.
+#| fig-height: 3
+#| fig-width: 7
+#| echo: false
+
+knitr::include_graphics("../exp1/figures/rt_violin.png")
+```
+
+Reaction time by difference scores violin plot (@fig-rt-diff-plot).
+
+```{r}
+#| label: fig-rt-diff-plot
+#| fig-cap: RT difference scores (incomp - compat) by stimulus type.
+#| fig-height: 3
+#| fig-width: 7
+#| echo: false
+
+knitr::include_graphics("../exp1/figures/diff_violin.png")
+```
+
+Reaction time by difference scores density plot with quantiles (@fig-rt-dens-plot).
+
+```{r}
+#| label: fig-rt-dens-plot
+#| fig-cap: RT difference scores (incomp - compat) as a density plot.
+#| fig-height: 3
+#| fig-width: 7
+#| echo: false
+
+knitr::include_graphics("../exp1/figures/diff_dens_q.png")
+```
+
+
+## Inferential statistics ##
+
+Now we plot and tabulate parameters from the posterior distribution.
+
+Fixed effects from model b2  (@fig-fixef-plot).
+
+```{r}
+#| label: fig-fixef-plot
+#| fig-cap: Fixed effects from model b2.
+#| fig-height: 3
+#| fig-width: 7
+#| echo: false
+
+knitr::include_graphics("../exp1/figures/b2_fixef.png")
+```
+
+Here are a couple of example tables displaying fixed effects (@tbl-example1, @tbl-example2).
+
+```{r}
+#| include: false
+
+fix_tab <- read_csv("../exp1/tables/b2_fix_tab.csv")
+```
+
+```{r}
+#| label: tbl-example1
+#| tbl-cap: Table created with `tinytable::tt()`
+#| echo: false
+
+tinytable::tt(
+  head(fix_tab, 2),
+  digits = 2,
+  notes = "Note. This is a footnote."
+)
+```
+
+```{r}
+#| label: tbl-example2
+#| tbl-cap: Table created with `knitr::kable()`
+#| echo: false
+
+knitr::kable(
+  head(fix_tab, 2),
+  digits = 2
+)
+```
+
+# Discussion
+
+
+# Disclosures #
+
+## Data and code availability ##
+
+blah.
+
+## Author contributions ##
+
+We follow the Credit system. <https://credit.niso.org/>
+
+Blah.
+
+## Competing interests ##
+
+Blah.
+
+
+\newpage

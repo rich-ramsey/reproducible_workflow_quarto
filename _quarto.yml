@@ -1,0 +1,16 @@
+project:
+  title: "A reproducible workflow with Quarto"
+  render:
+    - tutorial.qmd
+    - manuscript/manuscript.qmd
+    - manuscript/supplementary/supplementary.qmd
+  output-dir: docs
+  
+site-url: https://your-username.github.io/your-repo
+repo-url: https://github.com/your-username/your-repo
+osf-url: https://osf.io/
+preprint-url: https://osf.io/preprints/psyarxiv/
+
+execute:
+  cache: false
+  freeze: auto

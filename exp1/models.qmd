@@ -1,0 +1,303 @@
+---
+title: "models"
+author: "Rich"
+date: "`r Sys.Date()`"
+format: html
+editor_options: 
+  chunk_output_type: console
+---
+
+This file builds a Bayesian multi-level model for an old gaze-cueing experiment 
+that Andrew and some masters students completed.
+
+```{r}
+#| label: setup
+#| echo: false
+
+## load packages
+pkg <- c("cmdstanr", "standist", "tidyverse", "RColorBrewer", "patchwork", 
+         "brms", "tidybayes", "bayesplot", "future", "parallel", "rstan")
+
+lapply(pkg, library, character.only = TRUE)
+
+## theme settings for ggplot
+theme_set(
+  theme_bw() +
+    theme(text = element_text(size = 18, face="bold"), 
+          title = element_text(size = 18, face="bold"),
+          legend.position = "bottom")
+)
+
+## Set the amount of dodge in figures
+pd <- position_dodge(0.7)
+pd2 <- position_dodge(1)
+
+## other settings
+options(brms.backend = "cmdstanr",
+        mc.cores = parallel::detectCores(),
+        future.fork.enable = TRUE,
+        future.rng.onMisuse = "ignore") ## automatically set in RStudio
+
+rstan_options(auto_write = TRUE)
+
+supportsMulticore()
+
+detectCores()
+
+plan(multicore)
+```
+
+
+# 1. read in data and models #
+
+## data ##
+
+create a variable for stim and condition that uses deviation coding. 
+
+And create a new variable that centres and standardises the dv.
+
+```{r}
+#| label: read-data
+
+datad <- read_csv("exp1/data/fdata.csv") %>% 
+  mutate(stimd = if_else(stim == "arrow", -0.5, 0.5),
+         compatd = if_else(compat == "compat", -0.5, 0.5)) %>% 
+  select(pid, stim, stimd, compat, compatd, rt) %>% 
+  mutate(c = rt - mean(rt),
+         cs = (rt - (mean(rt))) / sd(rt))
+head(datad)
+
+# write_csv(datad, "exp1/data/datad.csv")
+```
+
+## models ##
+
+This is useful if you want to look at aspects of a previously compiled model
+
+```{r}
+#| label: load-models
+## e.g.,
+# b0 <- readRDS("exp1/models/b0.rds")
+# b1 <- readRDS("exp1/models/b1.rds")
+# b2 <- readRDS("exp1/models/b2.rds")
+```
+
+# 2. build some models #
+
+At this point it is worth remembering that we are using gaussian / normal models
+below just for simplicity. 
+RT data would probably be better modelled by a bunch of
+other distributions. 
+But our focus here is not on that, so we'll keep it simple.
+
+## b0 - intercepts only, centred and standardised units ##
+
+model setup
+
+```{r}
+#| label: b0-model-setup
+
+## set the formula
+formula = bf(cs ~ 1)
+
+## get priors
+get_prior(formula,
+          data = datad, family = gaussian())
+
+## visualise priors
+visualize("normal(0, 0.5)", "normal(0, 1)", "normal(0, 2)", 
+          xlim = c(-4, 4))
+
+## set priors
+priors <- c(
+  set_prior("normal(0, 1)", class = "Intercept"),
+  set_prior("normal(0, 1)", class = "sigma")
+)
+```
+
+fit the model
+
+```{r}
+#| label: fit-model-b0
+
+b0 <- brm(formula = formula,
+        data = datad, family = gaussian(),
+        prior = priors,
+        iter = 2000, warmup = 1000, cores = 8, chains = 4,
+        save_pars = save_pars(all=TRUE),
+        seed = 123,
+        file = "exp1/models/b0")
+summary(b0)
+```
+
+take a look
+
+chains
+
+```{r}
+#| label: check-b0
+
+plot(b0)
+
+pp_b0 <- pp_check(b0, ndraws = 100)
+pp_b0
+```
+
+not a great fit for the reasons outlined above about the choice of model. 
+That's not important right now.
+
+
+## b1 - full model, centred and standardised units ##
+
+full model here just means the maximum varying effects structure. 
+See Barr et al., 2013 for justification. 
+
+model setup
+
+```{r}
+#| label: b1-model-setup
+
+formula = bf(cs ~ 1 + stimd*compatd +
+               (1 + stimd*compatd | pid))
+
+get_prior(formula,
+          data = datad, family = gaussian())
+
+## set priors
+## I use my usual 0,0.5 for slopes. 0,1 for sd. usual for cor.
+priors <- c(
+  set_prior("normal(0, 1)", class = "Intercept"),
+  set_prior("normal(0, 0.5)", class = "b"),
+  set_prior("normal(0, 1)", class = "sd"),
+  set_prior("normal(0, 1)", class = "sigma"),
+  set_prior("lkj(2)", class = "cor")
+)
+```
+
+fit the model
+
+```{r}
+#| label: fit-model-b1
+
+b1 <- brm(formula = formula,
+        data = datad, family = gaussian(),
+        prior = priors,
+        iter = 4000, warmup = 2000, cores = 8, chains = 4,
+        save_pars = save_pars(all=TRUE),
+        seed = 123,
+        file = "exp1/models/b1")
+summary(b1)
+```
+
+take a look
+
+```{r}
+#| label: check-b1
+
+plot(b1)
+
+pp_b1 <- pp_check(b1, ndraws = 100, type = "dens_overlay_grouped",
+                    group = "compatd")
+pp_b1
+```
+
+## b2 - full model, original rt units ##
+
+full model here just means the maximum varying effects structure. 
+See Barr et al., 2013 for justification. 
+
+model setup
+
+```{r}
+#| label: b2-model-setup
+
+formula = bf(rt ~ 1 + stimd*compatd +
+               (1 + stimd*compatd | pid))
+
+get_prior(formula,
+          data = datad, family = gaussian())
+
+## visualise priors
+## here we would normally visualise priors of interest to make a judgment about what
+## would constitute weakly informative priors. 
+## let's do that for the intercept
+visualize("normal(600, 100)", "normal(600, 150)", "normal(600, 200)", 
+          xlim = c(0, 1200))
+## And fixed effects
+visualize("normal(0, 25)", "normal(0, 50)", "normal(0, 100)", 
+          xlim = c(-200, 200))
+
+## set priors
+priors <- c(
+  set_prior("normal(600, 150)", class = "Intercept"),
+  set_prior("normal(0, 50)", class = "b"),
+  set_prior("normal(0, 150)", class = "sd"),
+  set_prior("normal(0, 150)", class = "sigma"),
+  set_prior("lkj(2)", class = "cor")
+)
+```
+
+fit the model
+
+```{r}
+#| label: fit-model-b2
+
+b2 <- brm(formula = formula,
+        data = datad, family = gaussian(),
+        prior = priors,
+        iter = 4000, warmup = 2000, cores = 8, chains = 4,
+        save_pars = save_pars(all=TRUE),
+        seed = 123,
+        file = "exp1/models/b2")
+summary(b2)
+```
+
+take a look
+
+chains
+
+```{r}
+#| label: check-b2
+
+plot(b2)
+
+pp_b2 <- pp_check(b2, ndraws = 100, type = "dens_overlay_grouped",
+                    group = "compatd")
+pp_b2
+```
+
+# 3. model diagnostics #
+
+take a quick look at model diagnostics for the full rt model, just as an example.
+
+## rt model ##
+
+### look at the chains ###
+
+Here we visualise if the chains mixed reasonably well. We do this to see if there are any alarming patterns of non-mixing. You should see nicely overlapping caterpillar plots if all is well. This is only for the full model as it is the most complex, we would expect the less complex models to behave if this one behaves ok.
+
+full rt model
+
+```{r}
+# this adds the chains from model b1 and creates a posterior samples dataframe called post
+post <- as_draws_df(b2)
+head(post)
+
+## here I only focus on the chains for the key variables of interest, but one can easily visualise all the variables if one wishes. Although you'll need a lot of separate figures...
+
+post <- post %>%
+  select(contains(c("b_", "sd_", ".chain"))) %>% # here I select fixed effects and sds. 
+  mutate(chain = .chain)  
+
+# now we plot them and save them as necessary
+p_chains <- post %>%
+  mcmc_trace(facet_args = list(ncol = 3)) +
+  scale_x_continuous(breaks = c(0, 2000)) + # if you have 4000 post warm-up samples per chain
+  theme_bw() +
+  theme(legend.position = "bottom")
+p_chains
+
+# save it
+ggsave ("exp1/figures/b2_chains.jpeg",
+        width = 8, height = 6)
+```

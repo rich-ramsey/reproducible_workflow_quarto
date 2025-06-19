@@ -1,0 +1,95 @@
+---
+title: "A tutorial on setting up a reproducible workflow in R and R Studio with Quarto"
+subtitle: "Supplementary Materials"
+running-head: "Reproducible workflow with Quarto"
+format:
+  html:
+    # Inherits all settings from root _quarto.yml
+    toc: true
+    toc-depth: 3
+    fontsize: 14pt
+    mainfont: Fira Sans
+    code-fold: true
+    number-sections: true
+    citations-hover: true
+    crossrefs-hover: true
+    other-links:
+      - text: Preprint (PsyArXiv)
+        href: https://osf.io/preprints/psyarxiv/
+        icon: file-pdf
+      - text: Online supplement
+        href: https://your-username.github.io/your-repo
+        icon: globe2
+      - text: GitHub Repository
+        href: https://github.com/your-username/your-repo
+        icon: github
+      - text: OSF Repository
+        href: https://osf.io/
+        icon: archive
+  preprint-typst:
+    output-file: supplementary.pdf
+    fontsize: 11pt
+    mainfont: Libertinus Serif
+    section-numbering: "S1."
+    suppress-bibliography: true
+  preprint-docx:
+    output-file: supplementary.docx
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+library(tidyverse)
+library(tinytable)
+```
+
+# Model formulas #
+
+The regression formula for the full model (model b2):
+$$rt \sim 1 + stimulus * compatibility + \ 
+(1 + stimulus * compatibility | pid)$$
+
+*Note:* rt = reaction time (ms); stimulus = blah; compatibility = blah; pid = subject/participant identifier.
+
+
+# A supplementary table #
+
+Here, I just reproduce the table from the main manuscript to save time making anything else.
+But of course in a real paper, you wouldn't do this, you'd just show whatever you needed.
+It is labelled differently to reflect that it is a supplementary table (@tbl-example-s1).
+
+```{r}
+#| include: false
+
+fix_tab <- read_csv("../../exp1/tables/b2_fix_tab.csv")
+```
+
+```{r}
+#| label: tbl-example-s1
+#| tbl-cap: Supplementary table created with `tinytable::tt()`
+#| echo: false
+
+tinytable::tt(
+  head(fix_tab, 2),
+  digits = 2,
+  notes = "Note. This is a footnote."
+)
+```
+
+# A supplementary figure #
+
+Let's take a look at the mixing of chains in the model.
+This is a useful model diagnostic check to see that the model built ok (@fig-supp-plot).
+
+```{r}
+#| label: fig-supp-plot
+#| fig-cap: Caterpillar plots showing the mixing of chains across parameters in model b2.
+#| fig-height: 3
+#| fig-width: 7
+#| echo: false
+
+knitr::include_graphics("../../exp1/figures/b2_chains.jpeg")
+```

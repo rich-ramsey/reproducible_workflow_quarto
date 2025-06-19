@@ -1,0 +1,314 @@
+---
+title: "wrangle"
+author: "Rich"
+date: "`r Sys.Date()`"
+output: html
+editor_options: 
+  chunk_output_type: console
+---
+
+This file wrangles raw data from an old gaze-cueing experiment that Andrew and
+some masters students completed.
+
+```{r}
+#| label: setup
+#| echo: false
+
+## load packages
+pkg <- c("tidyverse", "RColorBrewer", "patchwork", "ggridges")
+
+lapply(pkg, library, character.only = TRUE)
+
+## theme settings for ggplot
+theme_set(
+  theme_bw() +
+    theme(text = element_text(size = 18, face="bold"), 
+          title = element_text(size = 18, face="bold"),
+          legend.position = "bottom")
+)
+
+## Set the amount of dodge in figures
+pd <- position_dodge(0.7)
+pd2 <- position_dodge(1)
+```
+
+# 1. read in the raw data ##
+
+```{r}
+#| label: read-data
+
+raw <- read_csv("exp1/data/data.csv")
+head(raw)
+tail(raw)
+glimpse(raw)
+```
+
+# 2. wrangle ##
+
+recode pid
+
+```{r}
+#| label: wrangle-data
+
+data <- raw %>%
+  ## recode pid
+  mutate(pid = (str_remove(pid, "[pP]")),
+         pid = as.numeric(pid),
+         pid = if_else(is.na(pid), 2, pid)) |> # this is a bit hacky
+  ## recode stimuli - simplify stim coding by turning all gaze ids to be the same
+  mutate(stim = if_else(str_detect(stim, "stim"), "gaze", stim)) |> 
+  ## remove unnecessary columns, create factors, convert scales
+  select(-gaze, -target, -isi) |> 
+  mutate(stim = factor(stim,
+                       levels = c("arrow", "gaze")),
+         compat = factor(compat, 
+                         levels = c("compat", "incomp")),
+         rt = as.numeric(rt*1000),
+         acc = as.numeric(acc))
+head(data)
+
+## some data checks
+check.pid <- data |> 
+  distinct(pid)
+check.pid
+
+check.stim <- data |> 
+  distinct(stim)
+check.stim
+```
+
+
+# 3. make some summary data and plot ##
+
+## accuracy ##
+
+```{r}
+#| label: acc-summary
+
+## pid level
+acc_pid <- data %>% 
+  group_by(pid, stim, compat) |>  
+  summarise(n = n(), 
+            sum = sum(acc), 
+            perc = sum/n*100)
+acc_pid
+
+## group level
+acc_group <- acc_pid %>% 
+  group_by(stim, compat) %>% 
+  summarise(n = length(unique(pid)),
+            mean_sum = mean(sum), 
+            mean_perc = mean(perc),
+            sd = sd(perc),
+            sem = sd/sqrt(n)) %>% 
+  rename(sum = mean_sum, perc = mean_perc)
+acc_group
+```
+
+plot accuracy 
+
+```{r}
+#| label: plot-accuracy
+
+p3.1 <- ggplot(acc_pid, 
+               aes(x = compat, y = perc, fill = compat)) +
+  geom_jitter(position=position_jitterdodge(dodge.width =1), 
+               alpha = 1, colour = "darkgrey") +
+  geom_violin(alpha = 0.7, position=pd2) +
+  geom_point(data = acc_group, size = 3) +
+  geom_errorbar(data = acc_group,
+                aes(y = perc, ymin = perc-sem, ymax = perc+sem),
+                width=.2, position=pd2) +
+  scale_fill_brewer(palette = "Dark2") +
+  geom_line(data = acc_group, aes(y = perc, group=1)) +
+  facet_wrap(~stim) +
+  ylim(80, 100) +
+  labs(title = "Accuracy")
+p3.1   
+
+ggsave("exp1/figures/acc_violin.png",
+       width = 8, height = 6)
+```
+
+acc is very high - 95-96% for all conditions.
+slightly more accurate in the compat than incomp, but the difference is tiny <0.5% diff. 
+That means we can strip errors from the dataset and focus on RT. 
+
+## rt ##
+
+first, filter errors (i.e., where they pressed the wrong button).
+
+```{r}
+#| label: filter-acc
+
+fdata <- data %>% 
+  filter(acc == 1)
+head(fdata)
+```
+
+create summary data
+
+summary per pid
+
+```{r}
+#| label: rt-summary
+
+## pid level
+rt_pid <- fdata |>  
+  group_by(pid, stim, compat) |>  
+  summarise(n = n(), 
+            mean = mean(rt), 
+            sd = sd(rt),
+            sem = sd/sqrt(n))
+rt_pid
+
+## group level
+rt_group <- fdata |>  
+  group_by(stim, compat) |>  
+  summarise(n = n(), 
+            mean = mean(rt), 
+            sd = sd(rt),
+            sem = sd/sqrt(length(unique(pid))))
+rt_group
+```
+
+plot rt
+
+density
+
+```{r}
+#| label: plot-rt
+
+## density
+p3.2 <- ggplot(fdata, 
+               aes(x = rt, y=after_stat(count),
+                   fill = compat)) +
+  geom_density(alpha = 0.5) +
+  scale_fill_brewer(palette = "Dark2") +
+  facet_grid(~stim)
+p3.2  
+
+## violin
+p3.3 <- ggplot(fdata, 
+               aes(x = compat, y = rt, fill = compat)) +
+  geom_jitter(data = rt_pid, aes(y = mean), 
+              position=position_jitterdodge(dodge.width =1), 
+               alpha = 1, colour = "darkgrey") +
+  geom_violin(alpha = 0.7, position=pd2) +
+  geom_point(data = rt_group, aes(y = mean), size = 3) +
+  geom_errorbar(data = rt_group,
+                aes(y = mean, ymin = mean-sem, ymax = mean +sem),
+                width=.2, position=pd2) +
+  geom_line(data = rt_group, aes(y = mean, group=1)) +
+  scale_fill_brewer(palette = "Dark2") +
+  facet_grid(~stim) +
+  # ylim(250, 1250) +
+  labs(title = "Reaction time")
+p3.3  
+
+ggsave("exp1/figures/rt_violin.png",
+       width = 8, height = 6)
+```
+
+plot them together 
+
+```{r}
+#| label: plot-rt-acc
+
+p3.3 <- p3.1 | p3.2
+p3.3
+```
+
+# 4. calculate and plot difference scores ##
+
+
+```{r}
+#| label: calc-diffs
+
+## this is on the summary per pid data
+diffs <- rt_pid |> 
+  group_by(pid, stim) |>  
+  pivot_wider(id_cols = -c(n, sd, sem),
+              names_from = "compat",
+              values_from = "mean") |> 
+  summarise(diff = incomp - compat) 
+diffs
+
+## group level summary
+diffs_group <- diffs |> 
+  group_by(stim) |> 
+  summarise(n = n(), 
+            mean = mean(diff), 
+            sd = sd(diff),
+            sem = sd/sqrt(n))
+diffs_group
+```
+
+violin
+
+```{r}
+#| label: plot-diffs-violin
+
+p4.1 <- ggplot(diffs, 
+               aes(x = stim, y = diff, fill = stim)) +
+  geom_jitter(position=position_jitterdodge(dodge.width =1), 
+              alpha = 1, colour = "darkgrey") +
+  geom_violin(alpha = 0.7, position=pd2) +
+  geom_point(data = diffs_group, aes(y = mean), size=3) +
+  geom_errorbar(data = diffs_group,
+                aes(y = mean, ymin = mean-sem, ymax = mean+sem), 
+                width=.2, position=pd2) +
+  scale_fill_brewer(palette = "Dark2") +
+  geom_line(data = diffs_group, aes(y = mean, group=1)) +
+  labs(title = "Difference score") 
+p4.1 
+
+ggsave("exp1/figures/diff_violin.png",
+       width = 8, height = 6)
+```
+
+ok, so this seems like a small effect in the expected direction for both types of
+stimuli. 
+
+let's try to display percentiles for the size of the difference score
+
+using ggridges and with data points too
+
+```{r}
+#| label: plot-diffs-density
+
+p4.2 <- ggplot(diffs, aes(x = diff, y = "", fill = after_stat(quantile))) +
+  stat_density_ridges(
+    geom = "density_ridges_gradient", calc_ecdf = TRUE,
+    quantiles = 10, quantile_lines = TRUE, 
+    jittered_points = TRUE, scale = 50,
+    linewidth = 0.7, vline_color = "red",
+    point_size = 1, point_alpha = 1, 
+    position = position_raincloud(adjust_vlines = TRUE)
+  ) +
+  scale_fill_viridis_d(name = "Quantiles") +
+  geom_vline(xintercept = 0, colour = "black", linetype = "dashed",
+             linewidth = 1) +
+  geom_vline(data = diffs_group,
+             aes(xintercept = mean), colour = "turquoise", linetype = "dashed",
+             linewidth = 1) +
+  theme(legend.position = "bottom") +
+  guides(fill = guide_legend(nrow = 1)) +
+  labs(title = "Difference score density by quantile",
+       y = NULL,
+       x = "difference score (ms)") +
+  scale_x_continuous(breaks = seq(-150, 150, 25)) +
+  facet_wrap(~stim, ncol = 1)
+p4.2
+
+ggsave("exp1/figures/diff_dens_q.png",
+       width = 8, height = 6)
+```
+
+# 5. save out some data #
+
+```{r}
+#| label: save-data
+## all data
+write_csv(fdata, "exp1/data/fdata.csv")
+```

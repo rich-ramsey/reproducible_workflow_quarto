@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.31">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Rich Ramsey">
+<meta name="dcterms.date" content="2025-06-19">
+
+<title>Towards a more reproducible scientific workflow in R and R Studio using Quarto: A tutorial</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="tutorial_files/libs/clipboard/clipboard.min.js"></script>
+<script src="tutorial_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="tutorial_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="tutorial_files/libs/quarto-html/popper.min.js"></script>
+<script src="tutorial_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="tutorial_files/libs/quarto-html/anchor.min.js"></script>
+<link href="tutorial_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="tutorial_files/libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="tutorial_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="tutorial_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="tutorial_files/libs/bootstrap/bootstrap-738763a67e94e5ab23922402a2221c6c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#background-and-aims" id="toc-background-and-aims" class="nav-link active" data-scroll-target="#background-and-aims">Background and aims</a>
+  <ul class="collapse">
+  <li><a href="#intended-audience" id="toc-intended-audience" class="nav-link" data-scroll-target="#intended-audience">Intended audience</a></li>
+  <li><a href="#disclaimer" id="toc-disclaimer" class="nav-link" data-scroll-target="#disclaimer">Disclaimer</a></li>
+  <li><a href="#structure-of-the-tutorial" id="toc-structure-of-the-tutorial" class="nav-link" data-scroll-target="#structure-of-the-tutorial">Structure of the tutorial</a></li>
+  </ul></li>
+  <li><a href="#project-setup" id="toc-project-setup" class="nav-link" data-scroll-target="#project-setup">Project setup</a>
+  <ul class="collapse">
+  <li><a href="#always-work-within-an-r-project-.rproj" id="toc-always-work-within-an-r-project-.rproj" class="nav-link" data-scroll-target="#always-work-within-an-r-project-.rproj">Always work within an R project (.Rproj)</a></li>
+  <li><a href="#r-package-management-via-renv" id="toc-r-package-management-via-renv" class="nav-link" data-scroll-target="#r-package-management-via-renv">R package management via renv()</a></li>
+  <li><a href="#version-control-via-git" id="toc-version-control-via-git" class="nav-link" data-scroll-target="#version-control-via-git">Version control via git</a></li>
+  <li><a href="#collaboration-and-code-sharing-via-github" id="toc-collaboration-and-code-sharing-via-github" class="nav-link" data-scroll-target="#collaboration-and-code-sharing-via-github">Collaboration and code sharing via GitHub</a></li>
+  <li><a href="#prepare-a-manuscript-in-quarto-using-the-quarto-preprint-extension" id="toc-prepare-a-manuscript-in-quarto-using-the-quarto-preprint-extension" class="nav-link" data-scroll-target="#prepare-a-manuscript-in-quarto-using-the-quarto-preprint-extension">Prepare a manuscript in Quarto using the quarto-preprint extension</a></li>
+  </ul></li>
+  <li><a href="#project-organisation" id="toc-project-organisation" class="nav-link" data-scroll-target="#project-organisation">Project organisation</a>
+  <ul class="collapse">
+  <li><a href="#monsters-vs.-modules" id="toc-monsters-vs.-modules" class="nav-link" data-scroll-target="#monsters-vs.-modules">Monsters vs.&nbsp;modules</a>
+  <ul class="collapse">
+  <li><a href="#monster-workflows" id="toc-monster-workflows" class="nav-link" data-scroll-target="#monster-workflows">Monster workflows</a></li>
+  <li><a href="#modular-workflows" id="toc-modular-workflows" class="nav-link" data-scroll-target="#modular-workflows">Modular workflows</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#my-labs-workflow" id="toc-my-labs-workflow" class="nav-link" data-scroll-target="#my-labs-workflow">My lab’s workflow</a>
+  <ul class="collapse">
+  <li><a href="#experiment-folders" id="toc-experiment-folders" class="nav-link" data-scroll-target="#experiment-folders">Experiment folders</a>
+  <ul class="collapse">
+  <li><a href="#files" id="toc-files" class="nav-link" data-scroll-target="#files">Files</a></li>
+  <li><a href="#sub-folders" id="toc-sub-folders" class="nav-link" data-scroll-target="#sub-folders">Sub-folders</a></li>
+  </ul></li>
+  <li><a href="#a-manuscript-folder" id="toc-a-manuscript-folder" class="nav-link" data-scroll-target="#a-manuscript-folder">A manuscript folder</a>
+  <ul class="collapse">
+  <li><a href="#setting-up-the-quarto-preprint-extension" id="toc-setting-up-the-quarto-preprint-extension" class="nav-link" data-scroll-target="#setting-up-the-quarto-preprint-extension">setting up the quarto-preprint extension</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#summary-and-conclusions" id="toc-summary-and-conclusions" class="nav-link" data-scroll-target="#summary-and-conclusions">Summary and conclusions</a>
+  <ul class="collapse">
+  <li><a href="#package-management-with-renv-and-version-control-with-git" id="toc-package-management-with-renv-and-version-control-with-git" class="nav-link" data-scroll-target="#package-management-with-renv-and-version-control-with-git">package management with renv() and version control with git</a></li>
+  <li><a href="#is-writing-in-r-markdown-actually-any-better-than-writing-in-ms-word" id="toc-is-writing-in-r-markdown-actually-any-better-than-writing-in-ms-word" class="nav-link" data-scroll-target="#is-writing-in-r-markdown-actually-any-better-than-writing-in-ms-word">Is writing in R markdown actually any better than writing in MS Word?</a></li>
+  <li><a href="#and-what-about-collaboration-when-writing-in-r-markdown" id="toc-and-what-about-collaboration-when-writing-in-r-markdown" class="nav-link" data-scroll-target="#and-what-about-collaboration-when-writing-in-r-markdown">And what about collaboration when writing in R Markdown?</a></li>
+  </ul></li>
+  <li><a href="#project-setup-practical-examples" id="toc-project-setup-practical-examples" class="nav-link" data-scroll-target="#project-setup-practical-examples">Project setup practical examples</a>
+  <ul class="collapse">
+  <li><a href="#example-1---creating-your-own-r-project-with-git-and-renv" id="toc-example-1---creating-your-own-r-project-with-git-and-renv" class="nav-link" data-scroll-target="#example-1---creating-your-own-r-project-with-git-and-renv">Example 1 - creating your own R project with git and renv()</a></li>
+  <li><a href="#example-2---cloning-or-downloading-a-project-from-github-that-uses-renv" id="toc-example-2---cloning-or-downloading-a-project-from-github-that-uses-renv" class="nav-link" data-scroll-target="#example-2---cloning-or-downloading-a-project-from-github-that-uses-renv">Example 2 - cloning or downloading a project from github that uses renv()</a></li>
+  </ul></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="tutorial.pdf"><i class="bi bi-file-pdf"></i>Typst</a></li></ul></div></nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Towards a more reproducible scientific workflow in R and R Studio using Quarto: A tutorial</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Rich Ramsey </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">June 19, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div style="page-break-after: always;"></div>
+<section id="background-and-aims" class="level1">
+<h1>Background and aims</h1>
+<p><strong><em>Why bother creating a reproducible workflow?</em></strong></p>
+<p>A fundamental aspect of scientific research is that it should be open to others and reproducible. However, not many people achieve that goal on a routine basis (at least not in the disciplines that I’m most familiar with, which include psychology and human neuroscience).</p>
+<p>For the benefit of science, adopting research practices that aid transparency and computational reproducibility helps to create a research culture where independent verification and collaboration are the norm, rather than the exception.</p>
+<p>From a more selfish perspective, developing a reproducible and consistent workflow is important for your future self. That is, you (and your lab members) benefit if things are easy to reproduce in 6 days, 6 weeks or 6 months time.</p>
+<p><strong><em>What’s the difference between replicable and reproducible?</em></strong></p>
+<p><strong>Replicable:</strong> You can run a new study following a previously published set of materials and find similar patterns of results (as measured by some comparable metric).</p>
+<p><strong>Reproducible:</strong> You can take previously published data and analysis code and reproduce the identical pattern of results.</p>
+<p><strong><em>What is the aim of this tutorial?</em></strong></p>
+<p>Outline a workflow in R and R Studio that goes from raw data to a finished manuscript in a (hopefully) computationally reproducible manner.</p>
+<p><strong><em>What kind of workflow is presented?</em></strong></p>
+<p>The basic component pieces are as follows:</p>
+<ul>
+<li><a href="https://rstudio.github.io/renv/articles/renv.html">renv()</a> to manage R package versions</li>
+<li><a href="https://git-scm.com/book/en/v2/Getting-Started-About-Version-Control">git</a> for version control</li>
+<li><a href="https://github.com/">GitHub</a> for collaborating and sharing coding</li>
+<li>The <a href="https://www.tidyverse.org/">Tidyverse</a> ecosystem for data wrangling and visualisation</li>
+<li><a href="https://paul-buerkner.github.io/brms/">brms</a> for building Bayesian regression models</li>
+<li>The <a href="https://github.com/mvuorre/quarto-preprint">quarto-preprint</a> extension for writing reproducible manuscripts in <a href="https://quarto.org/">Quarto</a>.</li>
+</ul>
+<p>As you can see, all I am doing here is combining a bunch of packages and processes into one workflow. There is nothing inherently novel in the workflow I present, just one worked example of how to combine a set of processes.</p>
+<section id="intended-audience" class="level2">
+<h2 class="anchored" data-anchor-id="intended-audience">Intended audience</h2>
+<p>If you analyse data in R and also produce manuscripts and reports, this might be helpful.</p>
+</section>
+<section id="disclaimer" class="level2">
+<h2 class="anchored" data-anchor-id="disclaimer">Disclaimer</h2>
+<p>I’m not a computer scientist. I’m a cognitive neuroscientist and a relatively inexperienced programmer. This means I will be presenting only a basic introduction that is based on my experience running a lab. I am sure that there are better ways to write code and setup a project’s workflow. Moreover, given the focus on reproducibility over the last decade or so, there are probably more comprehensive workflows available online.</p>
+<p>However, concrete examples of how you combine renv(), git, GitHub and the quarto-preprint extension into one workflow seem relatively rare. And that’s the kind of workflow that I’m encouraging my lab to use, so I figured I should write it down somewhere. With this disclaimer and the spirit of continual improvement in mind, it is worth stressing that this is a live document that will be updated in time, and therefore constructive feedback is welcomed.</p>
+</section>
+<section id="structure-of-the-tutorial" class="level2">
+<h2 class="anchored" data-anchor-id="structure-of-the-tutorial">Structure of the tutorial</h2>
+<p>There are four main sections.</p>
+<p><strong>1) Project setup.</strong></p>
+<p>Concepts and packages that underpin the general setup are described.</p>
+<p><strong>2) Project organisation.</strong></p>
+<p>Two general ways to organise scientific projects are presented.</p>
+<p><strong>3) My lab’s workflow.</strong></p>
+<p>My lab’s scientific workflow is presented to provide a concrete example of the workflow in practice.</p>
+<p><strong>4) Project setup practical examples.</strong></p>
+<p>Practical examples of how to set things up are given with screenshots to illustrate.</p>
+<div style="page-break-after: always;"></div>
+</section>
+</section>
+<section id="project-setup" class="level1">
+<h1>Project setup</h1>
+<p>For each project, there is more general setup required than you might be used to. This takes time, but it is really valuable. The general setup process is the foundation that makes your work become computationally reproducible in an efficient and effective manner. This general setup is also what you want to get baked into a good data hygiene habit as soon as possible. Once it becomes routine to work this way, it is no longer mentally taxing because it has become habitual.</p>
+<p>There are several aspects to the general setup, which I outline next.</p>
+<section id="always-work-within-an-r-project-.rproj" class="level2">
+<h2 class="anchored" data-anchor-id="always-work-within-an-r-project-.rproj">Always work within an R project (.Rproj)</h2>
+<p>Whenever you start a project, open an R Project file (.Rproj) first. I would do this no matter how trivial the project. Unless you are truly just messing around (whatever that means), I would <strong>ALWAYS</strong> just start by opening an R project first.</p>
+<p>For those that like to open an R script and get coding, this will feel like a pain because it <strong>IS</strong> a pain in the backside.</p>
+<p>I admit that initially, it is simply annoying and slows you down. But very quickly, I found that it became a baked-in habit, which can be done efficiently once you start to feel familiar with the general setup process.</p>
+</section>
+<section id="r-package-management-via-renv" class="level2">
+<h2 class="anchored" data-anchor-id="r-package-management-via-renv">R package management via renv()</h2>
+<p><strong><em>What problem is renv() solving?</em></strong></p>
+<p>renv() solves a major problem with the default approach to package management in R. The default is that packages are installed into the global R environment and loaded from the global R environment. Whenever you load a package, therefore, you load the same package versions because you only have one package version installed on your machine at any one time. For example, let’s say you are working on 20 distinct scientific projects, each of which may last for a different duration with some finishing and some new projects starting. Each project has a similar structure and uses a similar set of packages. The default is that they would load packages that are installed in the global R environment. Over time, as you update a particular package, then it will update the package version that is stored in your global R environment and subsequently <strong>ALL 20 SCIENTIFIC PROJECTS</strong> will now load the new package version.</p>
+<p>This workflow can be problematic for several reasons.</p>
+<ul>
+<li>Over the typical duration of many scientific projects, which often last months or years, it is hard (or borderline impossible) to keep track of which package versions were involved in which specific project’s analyses.</li>
+<li>It can be very difficult to decide when to update packages, as it might interfere with older projects, which remain active.</li>
+<li>It is hard to easily share which specific versions you used in a particular analysis. You can use sessionInfo() to list what you used in the current script, but that is at best a partial solution.</li>
+<li>It is hard to go back in time and load packages that you used in a past analysis.</li>
+</ul>
+<p><strong><em>renv() basics</em></strong></p>
+<p>For the basics, watch the below video and head to the renv() website. They are both superb resources and clear for non-programmers.</p>
+<p>Short video on youtube (20 mins), which provides an <a href="https://www.youtube.com/watch?v=yjlEbIDevOs">introduction to renv()</a> .</p>
+<p>Take a look at the <a href="https://rstudio.github.io/renv/articles/renv.html">renv() website for further details</a>.</p>
+<p><strong><em>renv() in action</em></strong></p>
+<ul>
+<li>When you open your R project file, always activate renv() to perform package management within your R project.</li>
+<li>Your packages are installed within the specific R project (i.e., the .Rproj file) and not in the global R environment.</li>
+<li>Your R package versions are recorded in a lock.file when you run the function renv::snapshot().</li>
+<li>And your future self or anyone else can directly install those specific package versions by running renv::restore().</li>
+<li>Alternatively, if you want to update packages, then update them in a normal manner and record them in your lock.file with renv::snapshot().</li>
+</ul>
+<p><strong><em>renv() benefits</em></strong></p>
+<ul>
+<li>The packages that you load are always specific to the project that they are loaded within, which means that each project can use different packages and package versions.</li>
+<li>When you work on multiple projects over the course of months or years, there is no issue identifying which package version you used previously.</li>
+<li>If you update a package, it only updates the package version in that specific project.</li>
+<li>Sharing which packages you used with others becomes trivial as these are automatically recorded in a lock.file which can be automatically loaded and installed by other users.</li>
+</ul>
+<p><strong><em>renv() engineering</em></strong></p>
+<p>A further appealing aspect of renv() is that it relies on smart engineering (at least it does to my untrained eye).</p>
+<ul>
+<li>Rather than install packages repeatedly in every project, which can be time-consuming and hog space on your machine, renv() creates a cache that all R projects can draw from.</li>
+<li>If a specific package version has been previously downloaded into the cache, your R project will just link to the cache, rather than re-download the specific package version.</li>
+<li>That all sounds very sensible to me, but I’m not an engineer, so what do I know?</li>
+</ul>
+</section>
+<section id="version-control-via-git" class="level2">
+<h2 class="anchored" data-anchor-id="version-control-via-git">Version control via git</h2>
+<p>For those like me that use R Studio and would not consider themselves to be a particularly experienced programmer, then read this outstanding tutorial on using git with R Studio: <a href="https://journals.sagepub.com/doi/abs/10.1177/2515245918754826">Vuorre &amp; Curley, 2018</a>.</p>
+<p>This tutorial walks you through the value of using version control via git, as well as how to do so when you primarily use R Studio.</p>
+<p>One thing to note, git is a general piece of version control software that is not tied to R. It is therefore useful for keeping track of all types of files and their version histories.</p>
+<p><strong><em>git benefits</em></strong></p>
+<ul>
+<li>You can stop using filenames to record version histories. That means you can stop using awful labels, such as dates, initials, or the dreaded ….: <strong>manuscript_initials_date_final_FINAL_REALLYFINAL_FFS.doc</strong>.</li>
+<li>Instead, git is designed to track changes, so you can completely stop renaming files.</li>
+<li>When you “commit” a change to git, it requires you to add a description of what the change involved.</li>
+<li>If necessary, you can then go back in time to access an earlier version of the project and there should be a description of the state of the project at that time.</li>
+</ul>
+<p><strong><em>git warning</em></strong></p>
+<p>Initially, git is going to seem very weird. There is no denying that. It takes a little bit of getting used to, but the benefits are immense in the end because you can transition to using a tool that was designed specifically for version control to do version control. And that makes sense in my mind in general, and especially compared to the alternatives (e.g., manually renaming files). As such, you benefit from someone else doing the hard work to build the relevant infrastructure that is purpose-built for efficiently and effectively tracking version histories.</p>
+</section>
+<section id="collaboration-and-code-sharing-via-github" class="level2">
+<h2 class="anchored" data-anchor-id="collaboration-and-code-sharing-via-github">Collaboration and code sharing via GitHub</h2>
+<p>The same tutorial by Vuorre &amp; Curley (2018) also explains how to work together with collaborators and share your code publicly when you are ready to do so.</p>
+<ul>
+<li>This involves connecting the project on your local machine to an online repository that is stored on GitHub.</li>
+<li>When you “commit” a change, you can simply “push” the commit to GitHub.</li>
+<li>At that point, the online version is the same as the local version on your machine.</li>
+<li>This process is convenient, which makes the possibility of collaborating and sharing projects an easy option, since you do not do anything extra to the local folder and you don’t drag and drop files to a online repository, such as the OSF.</li>
+<li>If you want to co-author code with someone else, then you can give others access to the project and they can add changes and you can decide if and how you want to integrate those changes.</li>
+</ul>
+</section>
+<section id="prepare-a-manuscript-in-quarto-using-the-quarto-preprint-extension" class="level2">
+<h2 class="anchored" data-anchor-id="prepare-a-manuscript-in-quarto-using-the-quarto-preprint-extension">Prepare a manuscript in Quarto using the quarto-preprint extension</h2>
+<p>Quarto is just the latest version of R Markdown. And the <a href="https://github.com/mvuorre/quarto-preprint">quarto-preprint</a> extension is just one way of writing reproducible manuscripts in Quarto.</p>
+<p>Some of the benefits of using Quarto to write manuscripts are as follows:</p>
+<ul>
+<li>computer code and prose can be written in one document.</li>
+<li>you can output to a range of different file formats, such as .html, .doc or pdf.</li>
+<li>changes can be tracked via git just like another file.</li>
+</ul>
+<p>Further details can be found in the following links.</p>
+<p>quarto-preprint extension: <a href="https://github.com/mvuorre/quarto-preprint" class="uri">https://github.com/mvuorre/quarto-preprint</a></p>
+<p>Quarto: <a href="https://quarto.org/" class="uri">https://quarto.org/</a></p>
+<p>In brief, my experience so far using the quarto-preprint extension is that it works without much fuss and it is very fast to produce pdfs via the use of <a href="https://posit.co/blog/posit-and-typst/">typst</a>.</p>
+<div style="page-break-after: always;"></div>
+</section>
+</section>
+<section id="project-organisation" class="level1">
+<h1>Project organisation</h1>
+<p>So far, we’ve covered the main component pieces that we are using to create a reproducible environment in R, track changes via git, collaborate and share code via GitHub and write a manuscript in Quarto.</p>
+<p>But how should we structure things to put all of those pieces together? We have some choices here, two of which I refer to as “monsters” and “modules”.</p>
+<section id="monsters-vs.-modules" class="level2">
+<h2 class="anchored" data-anchor-id="monsters-vs.-modules">Monsters vs.&nbsp;modules</h2>
+<p>A “monster” structure would be one massive beast of a Quarto file that takes in the raw data, runs analyses and produces the manuscript via the quarto-preprint extension.</p>
+<p>A “modular” structure would split up the workflow into separate self-contained units or modules.</p>
+<p>I can see strengths and weaknesses for both types of structure, which I outline next.</p>
+<section id="monster-workflows" class="level3">
+<h3 class="anchored" data-anchor-id="monster-workflows">Monster workflows</h3>
+<p>Monster workflows are self-contained in one .qmd file, which is appealing for linking data and model output to plots and tables, as they are all created in one single file. I’m sure there is some technical language from computer science that explains the benefits of this kind of workflow, in terms of computational efficiency and the minimisation of bugs and code breakdowns. But I as I said earlier, I’m not a computer scientist, so I’m just guessing. My sense would be that monster workflows are good when the analyses are relatively simple. For example, if data files are not overly large and only a few analyses are run, then it seems like it would be a perfectly sensible and preferable choice.</p>
+<p>An example is here from Lisa DeBruine’s group: <a href="https://osf.io/eb9dq" class="uri">https://osf.io/eb9dq</a></p>
+</section>
+<section id="modular-workflows" class="level3">
+<h3 class="anchored" data-anchor-id="modular-workflows">Modular workflows</h3>
+<p>Modular workflows deconstruct the whole into distinct pieces. My lab tends to adopt this approach. This is mainly because the thought of having all of that code in one .qmd file makes my brain melt. It is also because some of the Bayesian models we build can take hours, days or weeks to run. I know you can use the “cache” function in code chunks to save re-doing costly computations. But at the moment, I just prefer to split up the main tasks into separate modules and scripts. As such, this is the workflow that I outline below to provide a concrete example of my lab’s current approach.</p>
+<div style="page-break-after: always;"></div>
+</section>
+</section>
+</section>
+<section id="my-labs-workflow" class="level1">
+<h1>My lab’s workflow</h1>
+<p>Irrespective of the way the project is organised (i.e., monster vs modular), my lab tries to adopt a consistent data science workflow or structure. The specific choices we make here are not important for creating a reproducible workflow. In other words, whatever analysis pipeline you use within R, you could always pair that with renv(), git, GitHub and quarto-preprint. But by providing a real example of a typical dataset and analysis pipeline (rather than using simple example datasets), it might help folks understand our choices a little more. It will also help my lab members (or anyone else) to get their hands dirty with one of our typical data analysis pipelines. So, as you read what follows, if you’re interested in digging into the analysis weeds, you can head to the <strong>/exp1/</strong> folder and take a look at the specific analysis scripts themselves.</p>
+<p>If a given project followed the general setup, which I outlined above, it would mean that the project folder would already contain the following:</p>
+<ul>
+<li>An .Rproj file (called something sensible, which labels the project).</li>
+<li>A renv.lock file.</li>
+<li>A /renv/ folder</li>
+<li>A README.md file. README files are very important. I would make one for <strong>EVERY SINGLE</strong> project that you ever do. I cannot stress how important README files are for your future self when you want to return to a project. See some advice <a href="https://www.freecodecamp.org/news/how-to-write-a-good-readme-file/">here</a> on how to write one.</li>
+</ul>
+<p>In addition to these folders, we would then have the following folders:</p>
+<ul>
+<li>experiment folders (one per experiment, labelled <strong>/exp1/</strong>, <strong>/exp2/</strong>, etc.)</li>
+<li>a manuscript folder, labelled <strong>/manuscript/</strong>.</li>
+</ul>
+<p>The manuscript folder then draws upon the contents of the experiment folders whenever necessary to produce the final manuscript.</p>
+<p>I will describe the contents of the experiment folders, followed by the contents of the manuscript folder.</p>
+<section id="experiment-folders" class="level2">
+<h2 class="anchored" data-anchor-id="experiment-folders">Experiment folders</h2>
+<p>I made three experiment folders just to provide the feel of things for multi-experiment papers, which would be the norm in my lab (i.e., exp1, exp2, exp3). But, for now, only exp1 has any content in it.</p>
+<p>In each <strong>/exp/</strong> folder, we would typically include a series of .Rmd files and further sub-folders. These files and folders are as follows:</p>
+<section id="files" class="level3">
+<h3 class="anchored" data-anchor-id="files">Files</h3>
+<p><strong>wrangle.qmd</strong></p>
+<p>This file takes the raw data, wrangles it to produce plots and descriptive statistics and also re-shapes it (if necessary) to be ready for subsequent statistical modelling.</p>
+<p><strong>models.qmd</strong></p>
+<p>This file takes the processed data and builds some Bayesian multi-level regression models.</p>
+<p><strong>effects.qmd</strong></p>
+<p>This file takes a model object and then visualises and tabulates parameter estimates from the posterior distribution.</p>
+</section>
+<section id="sub-folders" class="level3">
+<h3 class="anchored" data-anchor-id="sub-folders">Sub-folders</h3>
+<p>Various subfolders and their contents are as follows.</p>
+<p><strong>/data/</strong></p>
+<p>Raw data as well as the processed data.</p>
+<p><strong>/models/</strong></p>
+<p>Saved model objects, which in our case were created using <a href="https://paul-buerkner.github.io/brms/">brms</a>.</p>
+<p><strong>/figures/</strong></p>
+<p>Plots of raw data or model output.</p>
+<p><strong>/tables/</strong></p>
+<p>Tabulated data summarising data or model output.</p>
+<p><strong>/prereg/</strong></p>
+<p>The preregistration document, if it exists.</p>
+</section>
+</section>
+<section id="a-manuscript-folder" class="level2">
+<h2 class="anchored" data-anchor-id="a-manuscript-folder">A manuscript folder</h2>
+<p>I now turn to describe the manuscript folder. This is located at the top level of the project, e.g.,:</p>
+<p><strong>/manuscript/</strong></p>
+<p>Inside the manuscript folder, we would have a series of files, such as:</p>
+<p><strong>manuscript.qmd</strong></p>
+<p>This is where R Markdown and the papaja package are used to produce the manuscript.</p>
+<p><strong>manuscript.pdf</strong></p>
+<p>This is the pdf document that is produced.</p>
+<p><strong>references.bib</strong></p>
+<p>A biblatex file for storing all other cited references.</p>
+<p><strong>/supplementary/</strong></p>
+<p>Inside the manuscript folder, there is a subfolder called “supplementary”, which contains a supplementary.qmd file. This can be used to produce a supplementary materials documents.</p>
+<section id="setting-up-the-quarto-preprint-extension" class="level3">
+<h3 class="anchored" data-anchor-id="setting-up-the-quarto-preprint-extension">setting up the quarto-preprint extension</h3>
+<p>To get started, make sure you have an up-to-date version of quarto installed. Direct donwload here: <a href="https://quarto.org/docs/download/" class="uri">https://quarto.org/docs/download/</a></p>
+<p>Then, in the terminal, add the following quarto extensions to an existing project.</p>
+<p>quarto-preprint</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> add mvuorre/quarto-preprint</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>word count</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> add andrewheiss/quarto-wordcount</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>other possibly relevant functions</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> add andrewheiss/quarto-wordcount</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Then I would create and edit the details of the _quarto.yml file in the root folder, so that they are relevant for your project.</p>
+<p>In addition, I would recommend:</p>
+<ul>
+<li>using <a href="https://www.zotero.org/">zotero</a> as a citation manager. It is free and there are lots of nice extensions that make it even better.</li>
+<li>adding the <a href="https://retorque.re/zotero-better-bibtex/">better bibtex extension</a> to zotero.</li>
+<li>placing a reference style, such as apa.csl, in the manuscript subfolder.</li>
+</ul>
+<p>Known limitations - Figure and table numbering in supplementary materials needs fixing.</p>
+<div style="page-break-after: always;"></div>
+</section>
+</section>
+</section>
+<section id="summary-and-conclusions" class="level1">
+<h1>Summary and conclusions</h1>
+<p>There is a clear need for scientific research to be more computationally reproducible. This is important when sharing your research with others that are external to your research group (e.g., journals, academics, grant bodies, industry, etc.). Understanding and reproducing past work in an efficient and effective manner is equally as important for your future self, as well as collaborators inside and outside of the lab.</p>
+<p>But there is no such thing as a free lunch in this context. The steps that I have outlined above take a little bit of getting used to and there needs to be a healthy dose of expectation management in the process of ascending the learning curve. It will be a pain in the beginning as there are lots of new things to get your head around. But, in my experience, it gets easier relatively quickly and it is not long before you can see the obvious benefits.</p>
+<p>In the following sections, I review a few key aspects of the proposed workflow and evaluate them against the alternatives.</p>
+<section id="package-management-with-renv-and-version-control-with-git" class="level2">
+<h2 class="anchored" data-anchor-id="package-management-with-renv-and-version-control-with-git">package management with renv() and version control with git</h2>
+<p>My sense is that there is a lot to learn at the start, which puts people off. But, if we only consider data analysis and not writing manuscripts, this feels like a no-brainer to me. In other words, for the purposes of data analysis, I would definitely incorporate renv() and git (as well as github) into your workflow. The benefits hugely outweigh the initial learning curve costs.</p>
+</section>
+<section id="is-writing-in-r-markdown-actually-any-better-than-writing-in-ms-word" class="level2">
+<h2 class="anchored" data-anchor-id="is-writing-in-r-markdown-actually-any-better-than-writing-in-ms-word">Is writing in R markdown actually any better than writing in MS Word?</h2>
+<p>I don’t have that much experience writing manuscripts in R Markdown or Quarto, so it is still new to me at this point. My initial impression from writing a few manuscripts in this way along with reading a bunch of blog posts is as follows:</p>
+<ul>
+<li>You probably save no time overall compared to writing manuscripts in MS word, but you have a very different product.</li>
+<li>The product is more computationally reproducible and making changes is more robust and resistant to manual error. For example, you would no longer need to copy and paste information across tables or manually insert figures when updating an analysis in a revised manuscript.</li>
+<li>There is a learning curve that needs to be managed.</li>
+<li>If you use R more generally, it is easier for things to fit into an ecosystem and easier to make progress, given that you have a higher baseline level of experience.</li>
+<li>If you start to make the transition, follow principles of behaviour change and do not try to adopt everything at once. Instead, gradually build the component processes into your workflow. Once a component feels comfortable incorporate the next piece into your workflow. The gradual build might be as follows:
+<ul>
+<li>Use renv() and git immediately.</li>
+<li>then connect to GitHub and share code/collaborate.</li>
+<li>then start using quarto-preprint to write manuscripts.</li>
+</ul></li>
+</ul>
+</section>
+<section id="and-what-about-collaboration-when-writing-in-r-markdown" class="level2">
+<h2 class="anchored" data-anchor-id="and-what-about-collaboration-when-writing-in-r-markdown">And what about collaboration when writing in R Markdown?</h2>
+<p>Quarto can generate a word doc, amongst a range of other documents (pdf, .html etc.). So that’s good. But, if your collaborators only use MS Word and record edits via “track changes”, then you might have to re-do edits in Quarto. That is a clear negative of the current workflow.</p>
+<p>After decades of using word, however, I was ready for a change and felt it was time to encourage my lab to change also. So, the benefits outweighed the costs in my view. I opted to incorporate more edits into Quarto manually and version control those changes, in order to benefit from the much more substanial gains in computational reproducibility that Quarto offers. But I readily accept that that might not be the same calculation for everyone or for every project. In some cases, it might just be easier to use MS Word for manuscript preparation (or some other package) that is more familiar to the vast majority of the research team.</p>
+<div style="page-break-after: always;"></div>
+</section>
+</section>
+<section id="project-setup-practical-examples" class="level1">
+<h1>Project setup practical examples</h1>
+<p>Here are a bunch of screenshots that might help you initially setup an R project using renv() and git from R Studio.</p>
+<section id="example-1---creating-your-own-r-project-with-git-and-renv" class="level2">
+<h2 class="anchored" data-anchor-id="example-1---creating-your-own-r-project-with-git-and-renv">Example 1 - creating your own R project with git and renv()</h2>
+<p>In R Studio, click File &gt; New project.</p>
+<p>Then you should see the following.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="img/example1/1.1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Select “New Directory”</p>
+<p>And give the directory a sensible name. I chose “demo” for this example. Also tick the renv and git boxes and tick “Open in a new session” in the bottom left corner. Then hit “Create Project”.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="img/example1/1.2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This should open a R Studio project, which looks like the following series of images.</p>
+<p>renv is automatically initiated.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="img/example1/1.3.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>And in the files section, there are a bunch of files and a renv folder.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="img/example1/1.4.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>And there is a git tab in the environment section.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="img/example1/1.5.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>In the files tab, if you click on the .gitignore file, it should open a file like this. Here you can add things that you do not want git to track, which can be helpful.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="img/example1/1.6.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Then if you click the .Rprofile file, you should see this.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="img/example1/1.7.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The below specifies that packages should be installed from binaries rather than source.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="img/example1/1.8.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>That should be about it for the setup.</p>
+<p>As a sidenote, you will probably also want to set a global gitignore file for things that can be always ignore across all projects (see <a href="https://sebastiandedeyne.com/setting-up-a-global-gitignore-file/">here</a>).</p>
+</section>
+<section id="example-2---cloning-or-downloading-a-project-from-github-that-uses-renv" class="level2">
+<h2 class="anchored" data-anchor-id="example-2---cloning-or-downloading-a-project-from-github-that-uses-renv">Example 2 - cloning or downloading a project from github that uses renv()</h2>
+<p>You could also clone or download an existing project that used renv(). Here’s what you might do.</p>
+<p>Got to github (or somewhere) and clone or download the project. Here is a past project of mine called “sim_demo”.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="img/example2/2.1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Click on the green button called “code” and then choose to clone the project (see earlier git tutorial for info. on cloning) or hit download ZIP.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="img/example2/2.2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>once cloned or downloaded, open the R proj file and you should see something like the below image. The red text tells you that renv() has been automatically bootstrapped and installed.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="img/example2/2.3.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>you can type renv::restore() to install packages that are contained in the project’s lock.file. Press “y” to proceed to install all packages and see the download in progress like this. This could take a few minutes, depending on the number of packages.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="img/example2/2.4.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>When they are all done, the prompt returns.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="img/example2/2.5.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Then you can open up a script, load a package in the usual way and the package version that was just installed from the lock.file will be loaded.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="img/example2/2.6.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
