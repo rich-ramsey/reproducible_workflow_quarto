@@ -111,12 +111,12 @@ window.Quarto = {
 </section>
 <section id="a-supplementary-table" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> A supplementary table</h1>
-<p>Here, I just reproduce the table from the main manuscript to save time making anything else. But of course in a real paper, you wouldn’t do this, you’d just show whatever you needed. It is labelled differently to reflect that it is a supplementary table (<a href="#tbl-example-s1" class="quarto-xref">Table&nbsp;1</a>).</p>
+<p>Here, I just reproduce the table from the main manuscript to save time making anything else. But of course in a real paper, you wouldn’t do this, you’d just show whatever you needed. It is labelled differently to reflect that it is a supplementary table (Table S1).</p>
 <div class="cell">
 <div id="tbl-example-s1" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-example-s1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;1: Supplementary table created with <code>tinytable::tt()</code>
+Table S&nbsp;1: Supplementary table created with <code>tinytable::tt()</code>
 </figcaption>
 <div aria-describedby="tbl-example-s1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -124,8 +124,8 @@ Table&nbsp;1: Supplementary table created with <code>tinytable::tt()</code>
 
     <script>
 
-      function styleCell_kvwn7vb9yorsqd683a4l(i, j, css_id) {
-          var table = document.getElementById("tinytable_kvwn7vb9yorsqd683a4l");
+      function styleCell_0120yf4pnsyq7zb0pfxo(i, j, css_id) {
+          var table = document.getElementById("tinytable_0120yf4pnsyq7zb0pfxo");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -135,7 +135,7 @@ Table&nbsp;1: Supplementary table created with <code>tinytable::tt()</code>
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_kvwn7vb9yorsqd683a4l');
+        var table = document.getElementById('tinytable_0120yf4pnsyq7zb0pfxo');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -143,8 +143,8 @@ Table&nbsp;1: Supplementary table created with <code>tinytable::tt()</code>
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_kvwn7vb9yorsqd683a4l(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_kvwn7vb9yorsqd683a4l");
+      function spanCell_0120yf4pnsyq7zb0pfxo(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_0120yf4pnsyq7zb0pfxo");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -174,14 +174,14 @@ Table&nbsp;1: Supplementary table created with <code>tinytable::tt()</code>
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 2, j: 0 }, { i: 2, j: 1 }, { i: 2, j: 2 }, { i: 2, j: 3 },  ], css_id: 'tinytable_css_v1kyywk4egltl1p2ccix',}, 
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 },  ], css_id: 'tinytable_css_9m99l3kv2prweutwc2dx',}, 
+          { positions: [ { i: 2, j: 0 }, { i: 2, j: 1 }, { i: 2, j: 2 }, { i: 2, j: 3 },  ], css_id: 'tinytable_css_s4230oq6zlv8ztt4fudj',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 },  ], css_id: 'tinytable_css_jjwp0s3elt9h6961bot1',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_kvwn7vb9yorsqd683a4l(cell.i, cell.j, group.css_id);
+                  styleCell_0120yf4pnsyq7zb0pfxo(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -189,11 +189,11 @@ Table&nbsp;1: Supplementary table created with <code>tinytable::tt()</code>
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_v1kyywk4egltl1p2ccix, .table th.tinytable_css_v1kyywk4egltl1p2ccix { border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_9m99l3kv2prweutwc2dx, .table th.tinytable_css_9m99l3kv2prweutwc2dx { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_s4230oq6zlv8ztt4fudj, .table th.tinytable_css_s4230oq6zlv8ztt4fudj { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_jjwp0s3elt9h6961bot1, .table th.tinytable_css_jjwp0s3elt9h6961bot1 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_kvwn7vb9yorsqd683a4l" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_0120yf4pnsyq7zb0pfxo" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -229,7 +229,7 @@ Table&nbsp;1: Supplementary table created with <code>tinytable::tt()</code>
 </section>
 <section id="a-supplementary-figure" class="level1" data-number="3">
 <h1 data-number="3"><span class="header-section-number">3</span> A supplementary figure</h1>
-<p>Let’s take a look at the mixing of chains in the model. This is a useful model diagnostic check to see that the model built ok (<a href="#fig-supp-plot" class="quarto-xref">Figure&nbsp;1</a>).</p>
+<p>Let’s take a look at the mixing of chains in the model. This is a useful model diagnostic check to see that the model built ok (Figure S1).</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-supp-plot" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -238,7 +238,7 @@ Table&nbsp;1: Supplementary table created with <code>tinytable::tt()</code>
 <img src="../../exp1/figures/b2_chains.jpeg" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-supp-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: Caterpillar plots showing the mixing of chains across parameters in model b2.
+Figure S&nbsp;1: Caterpillar plots showing the mixing of chains across parameters in model b2.
 </figcaption>
 </figure>
 </div>

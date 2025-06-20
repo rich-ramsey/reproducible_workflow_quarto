@@ -2,6 +2,10 @@
 title: "A tutorial on setting up a reproducible workflow in R and R Studio with Quarto"
 subtitle: "Supplementary Materials"
 running-head: "Reproducible workflow with Quarto"
+crossref:
+  fig-title: "Figure S"
+  tbl-title: "Table S"
+  eq-title: "Equation S"
 format:
   html:
     # Inherits all settings from root _quarto.yml
@@ -59,7 +63,7 @@ $$rt \sim 1 + stimulus * compatibility + \
 
 Here, I just reproduce the table from the main manuscript to save time making anything else.
 But of course in a real paper, you wouldn't do this, you'd just show whatever you needed.
-It is labelled differently to reflect that it is a supplementary table (@tbl-example-s1).
+It is labelled differently to reflect that it is a supplementary table (Table S1).
 
 ```{r}
 #| include: false
@@ -82,7 +86,7 @@ tinytable::tt(
 # A supplementary figure #
 
 Let's take a look at the mixing of chains in the model.
-This is a useful model diagnostic check to see that the model built ok (@fig-supp-plot).
+This is a useful model diagnostic check to see that the model built ok (Figure S1).
 
 ```{r}
 #| label: fig-supp-plot
