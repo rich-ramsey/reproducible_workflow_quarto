@@ -342,20 +342,19 @@ Inside the manuscript folder, we would have a series of files, such as:
 
 **manuscript.qmd**
 
-This is where R Markdown and the papaja package are used to produce the manuscript.
+This is where Quarto is used to produce the manuscript.
 
-**manuscript.pdf**
+**supplementary.qmd**
 
-This is the pdf document that is produced.
+This can be used to produce a supplementary materials documents.
 
 **references.bib**
 
 A biblatex file for storing all other cited references.
 
-**/supplementary/**
+**apa.csl**
 
-Inside the manuscript folder, there is a subfolder called "supplementary", which contains a supplementary.qmd file.
-This can be used to produce a supplementary materials documents.
+for your choice of reference format.
 
 ### setting up the quarto-preprint extension ###
 
@@ -386,6 +385,9 @@ In addition, I would recommend:
 
 
 Known limitations - Figure and table numbering in supplementary materials needs fixing.
+
+And keep in mind that the documents generated are places in the /docs/ folder.
+So, if you want to see the files use quarto preview in the terminal or orient to the /docs/ folder.
 
 \newpage
 

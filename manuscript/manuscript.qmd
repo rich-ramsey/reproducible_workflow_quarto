@@ -54,6 +54,9 @@ format:
       - text: Online supplement
         href: https://your-username.github.io/your-repo
         icon: globe2
+      - text: Supplementary Materials (PDF)
+        href: supplementary.pdf
+        icon: file-pdf
       - text: GitHub Repository
         href: https://github.com/your-username/your-repo
         icon: github
@@ -79,7 +82,6 @@ library(tidyverse)
 library(tinytable)
 ```
 
-
 \newpage
 
 # Introduction
@@ -96,7 +98,6 @@ We report how we determined our sample size, all data exclusions (if any), all m
 ## Data analysis
 
 We used R version [@R-base] for all our analyses.
-
 
 # Results
 
@@ -152,7 +153,6 @@ Reaction time by difference scores density plot with quantiles (@fig-rt-dens-plo
 knitr::include_graphics("../exp1/figures/diff_dens_q.png")
 ```
 
-
 ## Inferential statistics ##
 
 Now we plot and tabulate parameters from the posterior distribution.
@@ -202,7 +202,6 @@ knitr::kable(
 
 # Discussion
 
-
 # Disclosures #
 
 ## Data and code availability ##
@@ -219,27 +218,25 @@ Blah.
 
 Blah.
 
-
 \newpage
-
 
 # References
 
 :::{#refs}
 :::
 
+::: {.content-visible when-format="html"}
 ::: {.appendix}
 
-# Appendix A: Supplementary Materials 
+# Appendix A: Supplementary Materials {.appendix}
 
 ## Model formulas
 
 The regression formula for the full model (model b2):
-$$rt \sim 1 + stimulus * compatibility + \ 
-(1 + stimulus * compatibility | pid)$$
+$rt \sim 1 + stimulus * compatibility + \ 
+(1 + stimulus * compatibility | pid)$
 
 *Note:* rt = reaction time (ms); stimulus = blah; compatibility = blah; pid = subject/participant identifier.
-
 
 ## A supplementary table 
 
@@ -280,4 +277,5 @@ This is a useful model diagnostic check to see that the model built ok (@fig-s1)
 knitr::include_graphics("../exp1/figures/b2_chains.jpeg")
 ```
 
+:::
 :::

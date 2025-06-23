@@ -374,13 +374,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><strong>/manuscript/</strong></p>
 <p>Inside the manuscript folder, we would have a series of files, such as:</p>
 <p><strong>manuscript.qmd</strong></p>
-<p>This is where R Markdown and the papaja package are used to produce the manuscript.</p>
-<p><strong>manuscript.pdf</strong></p>
-<p>This is the pdf document that is produced.</p>
+<p>This is where Quarto is used to produce the manuscript.</p>
+<p><strong>supplementary.qmd</strong></p>
+<p>This can be used to produce a supplementary materials documents.</p>
 <p><strong>references.bib</strong></p>
 <p>A biblatex file for storing all other cited references.</p>
-<p><strong>/supplementary/</strong></p>
-<p>Inside the manuscript folder, there is a subfolder called “supplementary”, which contains a supplementary.qmd file. This can be used to produce a supplementary materials documents.</p>
+<p><strong>apa.csl</strong></p>
+<p>for your choice of reference format.</p>
 <section id="setting-up-the-quarto-preprint-extension" class="level3">
 <h3 class="anchored" data-anchor-id="setting-up-the-quarto-preprint-extension">setting up the quarto-preprint extension</h3>
 <p>To get started, make sure you have an up-to-date version of quarto installed. Direct download here: <a href="https://quarto.org/docs/download/" class="uri">https://quarto.org/docs/download/</a></p>
@@ -397,6 +397,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>placing a reference style, such as apa.csl, in the manuscript subfolder.</li>
 </ul>
 <p>Known limitations - Figure and table numbering in supplementary materials needs fixing.</p>
+<p>And keep in mind that the documents generated are places in the /docs/ folder. So, if you want to see the files use quarto preview in the terminal or orient to the /docs/ folder.</p>
 <div style="page-break-after: always;"></div>
 </section>
 </section>

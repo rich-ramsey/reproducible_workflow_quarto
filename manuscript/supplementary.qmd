@@ -1,38 +1,44 @@
 ---
-title: "A tutorial on setting up a reproducible workflow in R and R Studio with Quarto"
-subtitle: "Supplementary Materials"
+title: "Supplementary Materials"
+subtitle: "A tutorial on setting up a reproducible workflow in R and R Studio with Quarto"
 running-head: "Reproducible workflow with Quarto"
+author:
+  - name: Richard Ramsey
+    email: richard.ramsey@hest.ethz.ch
+    orcid: 0000-0002-0329-2112
+    url: https://www.rich.ramsey.com
+    corresponding: true
+    equal-contributor: true
+    affiliation:
+      - ref: 1
+  - name: Second Author
+    email: mail@example.com
+    orcid: 
+    url: 
+    equal-contributor: true
+    affiliation:
+      - ref: 2
+      - ref: 3
+affiliations:
+  - id: 1
+    name: ETH Zurich
+    department: Department of Health Sciences and Technology
+  - id: 2
+    name: Example Institution
+    department: Department of Examples
+  - id: 3
+    name: Example Second Institution
+    department: Department of Examples
+keywords: [these are the key words]
+bibliography: references.bib
+csl: apa.csl
 functions: [place, appendix]
 format:
-  html:
-    # Inherits all settings from root _quarto.yml
-    toc: true
-    toc-depth: 3
-    fontsize: 14pt
-    mainfont: Fira Sans
-    code-fold: true
-    number-sections: true
-    citations-hover: true
-    crossrefs-hover: true
-    other-links:
-      - text: Preprint (PsyArXiv)
-        href: https://osf.io/preprints/psyarxiv/
-        icon: file-pdf
-      - text: Online supplement
-        href: https://your-username.github.io/your-repo
-        icon: globe2
-      - text: GitHub Repository
-        href: https://github.com/your-username/your-repo
-        icon: github
-      - text: OSF Repository
-        href: https://osf.io/
-        icon: archive
   preprint-typst:
     output-file: supplementary.pdf
     fontsize: 11pt
     mainfont: Libertinus Serif
-  preprint-docx:
-    output-file: supplementary.docx
+    section-numbering: "A."
 editor_options: 
   chunk_output_type: console
 ---
@@ -45,6 +51,7 @@ library(tidyverse)
 library(tinytable)
 ```
 
+
 ::: {.appendix}
 
 # Appendix A: Supplementary Materials {.appendix}
@@ -52,11 +59,10 @@ library(tinytable)
 ## Model formulas
 
 The regression formula for the full model (model b2):
-$$rt \sim 1 + stimulus * compatibility + \ 
-(1 + stimulus * compatibility | pid)$$
+$rt \sim 1 + stimulus * compatibility + \ 
+(1 + stimulus * compatibility | pid)$
 
 *Note:* rt = reaction time (ms); stimulus = blah; compatibility = blah; pid = subject/participant identifier.
-
 
 ## A supplementary table 
 
@@ -67,7 +73,7 @@ It is labelled differently to reflect that it is a supplementary table (@tbl-s1)
 ```{r}
 #| include: false
 
-fix_tab <- read_csv("../../exp1/tables/b2_fix_tab.csv")
+fix_tab <- read_csv("../exp1/tables/b2_fix_tab.csv")
 ```
 
 ```{r}
@@ -94,7 +100,7 @@ This is a useful model diagnostic check to see that the model built ok (@fig-s1)
 #| fig-width: 7
 #| echo: false
 
-knitr::include_graphics("../../exp1/figures/b2_chains.jpeg")
+knitr::include_graphics("../exp1/figures/b2_chains.jpeg")
 ```
 
 :::

@@ -1,0 +1,17 @@
+{
+  "hash": "27bf2f0b543485100b602a8b3eb985ec",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"A tutorial on setting up a reproducible workflow in R and R Studio with Quarto\"\nsubtitle: \"Supplementary Materials\"\nrunning-head: \"Reproducible workflow with Quarto\"\nfunctions: [place, appendix]\nformat:\n  html:\n    # Inherits all settings from root _quarto.yml\n    toc: true\n    toc-depth: 3\n    fontsize: 14pt\n    mainfont: Fira Sans\n    code-fold: true\n    number-sections: true\n    citations-hover: true\n    crossrefs-hover: true\n    other-links:\n      - text: Preprint (PsyArXiv)\n        href: https://osf.io/preprints/psyarxiv/\n        icon: file-pdf\n      - text: Online supplement\n        href: https://your-username.github.io/your-repo\n        icon: globe2\n      - text: GitHub Repository\n        href: https://github.com/your-username/your-repo\n        icon: github\n      - text: OSF Repository\n        href: https://osf.io/\n        icon: archive\n  preprint-typst:\n    output-file: supplementary.pdf\n    fontsize: 11pt\n    mainfont: Libertinus Serif\n  preprint-docx:\n    output-file: supplementary.docx\neditor_options: \n  chunk_output_type: console\n---\n\n\n\n::: {.appendix}\n\n# Appendix A: Supplementary Materials {.appendix}\n\n## Model formulas\n\nThe regression formula for the full model (model b2):\n$$rt \\sim 1 + stimulus * compatibility + \\ \n(1 + stimulus * compatibility | pid)$$\n\n*Note:* rt = reaction time (ms); stimulus = blah; compatibility = blah; pid = subject/participant identifier.\n\n\n## A supplementary table \n\nHere, I just reproduce the table from the main manuscript to save time making anything else.\nBut of course in a real paper, you wouldn't do this, you'd just show whatever you needed.\nIt is labelled differently to reflect that it is a supplementary table (@tbl-s1).\n\n\n\n\n::: {#tbl-s1 .cell tbl-cap='Supplementary table created with `tinytable::tt()`'}\n::: {.cell-output-display}\n\n+-----------+-------+--------+--------+\n| term      | value | .lower | .upper |\n+===========+=======+========+========+\n| intercept | 613.9 | 593.62 | 635    |\n+-----------+-------+--------+--------+\n| stimulus  | 6.4   | 0.77   | 12     |\n+===========+=======+========+========+\n| Note. This is a footnote.           |\n+===========+=======+========+========+\n:::\n:::\n\n\n## A supplementary figure \n\nLet's take a look at the mixing of chains in the model.\nThis is a useful model diagnostic check to see that the model built ok (@fig-s1).\n\n\n::: {.cell}\n::: {.cell-output-display}\n![Caterpillar plots showing the mixing of chains across parameters in model b2.](../../exp1/figures/b2_chains.jpeg){#fig-s1}\n:::\n:::\n\n\n:::",
+    "supporting": [
+      "supplementary_files"
+    ],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": null,
+    "postProcess": false
+  }
+}
