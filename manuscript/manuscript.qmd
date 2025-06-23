@@ -230,7 +230,7 @@ Blah.
 
 ::: {.appendix}
 
-# Appendix A: Supplementary Materials {.appendix}
+# Appendix A: Supplementary Materials 
 
 ## Model formulas
 
