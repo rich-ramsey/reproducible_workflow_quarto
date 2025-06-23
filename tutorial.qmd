@@ -360,7 +360,7 @@ This can be used to produce a supplementary materials documents.
 ### setting up the quarto-preprint extension ###
 
 To get started, make sure you have an up-to-date version of quarto installed.
-Direct donwload here: <https://quarto.org/docs/download/>
+Direct download here: <https://quarto.org/docs/download/>
 
 Then, in the terminal, add the following quarto extensions to an existing project.
 
@@ -368,12 +368,6 @@ quarto-preprint
 
 ```bash
 quarto add mvuorre/quarto-preprint
-```
-
-word count
-
-```bash
-quarto add andrewheiss/quarto-wordcount
 ```
 
 other possibly relevant functions
@@ -415,7 +409,7 @@ But, if we only consider data analysis and not writing manuscripts, this feels l
 In other words, for the purposes of data analysis, I would definitely incorporate renv() and git (as well as github) into your workflow. 
 The benefits hugely outweigh the initial learning curve costs.
 
-## Is writing in R markdown actually any better than writing in MS Word? ##
+## Is writing in Quarto actually any better than writing in MS Word? ##
 
 I don't have that much experience writing manuscripts in R Markdown or Quarto, so it is still new to me at this point.
 My initial impression from writing a few manuscripts in this way along with reading a bunch of blog posts is as follows:
@@ -433,7 +427,7 @@ The gradual build might be as follows:
   + then connect to GitHub and share code/collaborate.
   + then start using quarto-preprint to write manuscripts.
 
-## And what about collaboration when writing in R Markdown? ##
+## And what about collaboration when writing in Quarto? ##
 
 Quarto can generate a word doc, amongst a range of other documents (pdf, .html etc.). 
 So that's good. 

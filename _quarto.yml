@@ -3,7 +3,7 @@ project:
   render:
     - tutorial.qmd
     - manuscript/manuscript.qmd
-    - manuscript/supplementary/supplementary.qmd
+    # - manuscript/supplementary/supplementary.qmd
   output-dir: docs
   
 site-url: https://your-username.github.io/your-repo

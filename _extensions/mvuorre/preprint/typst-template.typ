@@ -1,4 +1,46 @@
+// Quarto Preprint Template for Typst
+// A scholarly document template providing academic paper formatting
+// Supports multi-column layouts, author metadata, and bibliographies
+
+// Imports
 #import "@preview/fontawesome:0.5.0": *
+#import "@preview/wordometer:0.1.4": word-count, total-words
+
+// Appendix function, use with YAML
+// functions: [place, appendix]
+// And wrap appendix in a {.appendix} div
+#let appendix(content) = {
+  pagebreak()
+  set heading(numbering: none)
+  // Reset counters
+  // TODO: Programmatically reset all (callout) counters
+  // TODO: Reset equation and other counters
+  counter(heading).update(0)
+  counter(figure.where(kind: "quarto-float-fig")).update(0)
+  counter(figure.where(kind: "quarto-float-tbl")).update(0)
+  counter(figure.where(kind: "quarto-float-lst")).update(0)
+  counter(figure.where(kind: "quarto-callout-Note")).update(0)
+  counter(figure.where(kind: "quarto-callout-Warning")).update(0)
+  counter(figure.where(kind: "quarto-callout-Important")).update(0)
+  counter(figure.where(kind: "quarto-callout-Tip")).update(0)
+  counter(figure.where(kind: "quarto-callout-Caution")).update(0)
+
+  // Figure & Table Numbering
+  set figure(
+    numbering: it => {
+      [A.#it]
+    },
+  )
+  place(
+    auto,
+    scope: "parent",
+    float: true,
+    {
+      content
+    },
+  )
+}
+
 
 #let preprint(
   // Document metadata
@@ -36,21 +78,26 @@
   toc_title: none,
   toc_depth: none,
   toc_indent: 1.5em,
-  bibliography-title: "References",
-  bibliographystyle: "apa",
   cols: 1,
   col-gutter: 4.2%,
+  // Bibliography settings (no effect if citeproc used)
+  bibliography-title: "References",
+  bibliographystyle: "apa",
   doc,
 ) = {
   /* Document settings */
+  set document(
+    title: if title != none { title } else { none },
+    author: if authors != none { authors.map(a => str(a.name.text)) } else { () },
+    description: abstract,
+    keywords: categories.text,
+  )
   // Link and cite colors
   show link: set text(fill: linkcolor)
   show cite: set text(fill: linkcolor)
 
-  // Allow custom title for bibliography section
+  // Customize Typst bibliography (no effect if using citeproc)
   set bibliography(title: bibliography-title, style: bibliographystyle)
-
-  // Bibliography paragraph spacing
   show bibliography: set par(spacing: spacing, leading: leading)
 
   // Space around figures
@@ -119,120 +166,84 @@
     text(size: 1em, weight: "bold", style: "italic", it.body + [.]),
   )
 
-  /* Front matter formatting */
-
-  let titleblock(
-    body,
-    width: 100%,
-    size: title-size,
-    weight: "bold",
-    above: 1em,
-    below: 0em,
-  ) = [
-    #align(center)[
-      #block(width: width, above: above, below: below)[
-        #text(weight: weight, size: size, hyphenate: false)[#body]
-      ]
-    ]
-  ]
-
-  /* Author formatting */
-
-  // Format author strings here, so can use in author note
-  let author_strings = ()
-  let equal_contributors = ()
-
-  if authors != none {
-    // First pass: collect equal contributors
-    for a in authors {
-      if a.keys().contains("equal-contributor") and a.at("equal-contributor") == true {
-        equal_contributors.push(a.name)
-      }
-    }
-
-    // Create equal contributor note text to reuse
-    let equal_contrib_text = none
-    if equal_contributors.len() > 1 {
-      equal_contrib_text = [#equal_contributors.join(", ", last: " & ") contributed equally to this work.]
-    }
-
-    // Second pass: build author display strings with attached footnotes
-    for a in authors {
-      let author_elements = (a.name,)
-
-      // Add affiliation superscript for multi-author papers
-      if authors.len() > 1 {
-        author_elements.push(super(a.affiliation))
-      }
-
-      // Add equal contributor marker if needed
-      if a.keys().contains("equal-contributor") and a.at("equal-contributor") == true and equal_contributors.len() > 1 {
-        author_elements.push(super[§])
-      }
-
-      // Add corresponding author footnote directly to the author name
-      if a.keys().contains("corresponding") {
-        author_elements.push(
-          footnote(
-            numbering: "*",
-            [
+  // Construct author display
+  let author_display = if authors != none {
+    authors
+      .map(a => {
+        let parts = (a.name,)
+        if authors.len() > 1 { parts.push(super(a.affiliation)) }
+        let equal_authors = authors.filter(auth => (
+          auth.keys().contains("equal-contributor") and auth.at("equal-contributor") == true
+        ))
+        if a.keys().contains("equal-contributor") and a.at("equal-contributor") == true and equal_authors.len() > 1 {
+          parts.push(super[§])
+        }
+        if a.keys().contains("corresponding") {
+          parts.push(
+            footnote(numbering: "*")[
               Send correspondence to: #a.name, #a.email.
-              #if equal_contrib_text != none [
-                #super[§]#equal_contrib_text
+              #if equal_authors.len() > 1 [
+                #super[§]#equal_authors.map(auth => auth.name).join(", ", last: " & ") contributed equally to this work.
               ]
               #if authornote != none [#authornote]
             ],
-          ),
-        )
-      }
+          )
+        }
+        if a.keys().contains("orcid") { parts.push(link(a.orcid, fa-orcid(fill: rgb("a6ce39"), size: 0.8em))) }
+        parts.join()
+      })
+      .join(", ", last: " & ")
+  } else { none }
 
-      // Add ORCID if available
-      if a.keys().contains("orcid") {
-        author_elements.push(link(a.orcid, fa-orcid(fill: rgb("a6ce39"), size: 0.8em)))
-      }
-
-      // Add author string to the list
-      author_strings.push(box(author_elements.join()))
-    }
+  // Hack: Include authors outside of "scope: parent" to ensure footnotes show
+  if author_display != none {
+    hide(author_display)
+    counter(footnote).update(n => n - 1)
+    v(-2.4em)
   }
 
+  // Place title, author, abstract always in one column
   place(
     top,
     scope: "parent",
     float: true,
     {
       if title != none {
-        titleblock(title, above: 0em)
+        align(center)[
+          #block(width: 100%, above: 0em, below: 0em)[
+            #text(weight: "bold", size: title-size)[#title]
+          ]
+        ]
       }
       if subtitle != none {
-        titleblock(subtitle, size: subtitle-size)
+        align(center)[
+          #block(width: 100%, above: 1em, below: 0em)[
+            #text(weight: "bold", size: subtitle-size)[#subtitle]
+          ]
+        ]
       }
 
-      if authors != none {
-        titleblock(
-          weight: "regular",
-          size: 1.25em,
-          above: 2.5em,
-          [#author_strings.join(", ", last: " & ")],
-        )
+      if author_display != none {
+        align(center)[
+          #block(width: 100%, above: 2.5em, below: 0em)[
+            #text(weight: "regular", size: subtitle-size)[#author_display]
+          ]
+        ]
       }
 
       if affiliations != none {
-        titleblock(
-          weight: "regular",
-          size: 1.1em,
-          below: 2em,
-          for a in affiliations [
-            #if authors.len() > 1 [#super[#a.id]]#a.name#if a.keys().contains("department") [, #a.department] \
-          ],
-        )
+        align(center)[
+          #block(width: 100%, above: 1em, below: 2em)[
+            #text(weight: "regular", size: 1.1em)[
+              #for a in affiliations [
+                #if authors.len() > 1 [#super[#a.id]]#a.name#if a.keys().contains("department") [, #a.department] \
+              ]
+            ]
+          ]
+        ]
       }
 
-      // Reset footnote counter for the main document
-      counter(footnote).update(0)
-
       /* Abstract and metadata section */
-
       block(inset: (top: 1em, bottom: 0em, left: 2.4em, right: 2.4em))[
         #set text(size: 0.92em)
         #set par(first-line-indent: 0em)
@@ -242,10 +253,13 @@
         #if categories != none {
           block()[#v(0.4em)#text(style: "italic")[Keywords:] #categories]
         }
-        #if wordcount != none {
-          block(inset: (bottom: if toc { 0em } else { 2em }))[#text(style: "italic")[Words:] #wordcount]
+        #if wordcount == true {
+          block(inset: (bottom: if toc { 0em } else { 2em }))[#text(style: "italic")[Words:] #total-words]
         }
       ]
+
+      // Reset footnote counter for the main document
+      counter(footnote).update(0)
 
       // Table of contents
       if toc {
@@ -259,7 +273,8 @@
       }
     },
   )
-
+  // Word count with wordometer package
+  show: word-count.with(exclude: (<refs>))
   /* Document content */
   doc
 }

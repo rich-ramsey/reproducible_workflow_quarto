@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Rich Ramsey">
-<meta name="dcterms.date" content="2025-06-20">
+<meta name="dcterms.date" content="2025-06-23">
 
 <title>Towards a more reproducible scientific workflow in R and R Studio using Quarto: A tutorial</title>
 <style>
@@ -120,8 +120,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#summary-and-conclusions" id="toc-summary-and-conclusions" class="nav-link" data-scroll-target="#summary-and-conclusions">Summary and conclusions</a>
   <ul class="collapse">
   <li><a href="#package-management-with-renv-and-version-control-with-git" id="toc-package-management-with-renv-and-version-control-with-git" class="nav-link" data-scroll-target="#package-management-with-renv-and-version-control-with-git">package management with renv() and version control with git</a></li>
-  <li><a href="#is-writing-in-r-markdown-actually-any-better-than-writing-in-ms-word" id="toc-is-writing-in-r-markdown-actually-any-better-than-writing-in-ms-word" class="nav-link" data-scroll-target="#is-writing-in-r-markdown-actually-any-better-than-writing-in-ms-word">Is writing in R markdown actually any better than writing in MS Word?</a></li>
-  <li><a href="#and-what-about-collaboration-when-writing-in-r-markdown" id="toc-and-what-about-collaboration-when-writing-in-r-markdown" class="nav-link" data-scroll-target="#and-what-about-collaboration-when-writing-in-r-markdown">And what about collaboration when writing in R Markdown?</a></li>
+  <li><a href="#is-writing-in-quarto-actually-any-better-than-writing-in-ms-word" id="toc-is-writing-in-quarto-actually-any-better-than-writing-in-ms-word" class="nav-link" data-scroll-target="#is-writing-in-quarto-actually-any-better-than-writing-in-ms-word">Is writing in Quarto actually any better than writing in MS Word?</a></li>
+  <li><a href="#and-what-about-collaboration-when-writing-in-quarto" id="toc-and-what-about-collaboration-when-writing-in-quarto" class="nav-link" data-scroll-target="#and-what-about-collaboration-when-writing-in-quarto">And what about collaboration when writing in Quarto?</a></li>
   </ul></li>
   <li><a href="#project-setup-practical-examples" id="toc-project-setup-practical-examples" class="nav-link" data-scroll-target="#project-setup-practical-examples">Project setup practical examples</a>
   <ul class="collapse">
@@ -154,7 +154,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">June 20, 2025</p>
+      <p class="date">June 23, 2025</p>
     </div>
   </div>
   
@@ -383,14 +383,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Inside the manuscript folder, there is a subfolder called “supplementary”, which contains a supplementary.qmd file. This can be used to produce a supplementary materials documents.</p>
 <section id="setting-up-the-quarto-preprint-extension" class="level3">
 <h3 class="anchored" data-anchor-id="setting-up-the-quarto-preprint-extension">setting up the quarto-preprint extension</h3>
-<p>To get started, make sure you have an up-to-date version of quarto installed. Direct donwload here: <a href="https://quarto.org/docs/download/" class="uri">https://quarto.org/docs/download/</a></p>
+<p>To get started, make sure you have an up-to-date version of quarto installed. Direct download here: <a href="https://quarto.org/docs/download/" class="uri">https://quarto.org/docs/download/</a></p>
 <p>Then, in the terminal, add the following quarto extensions to an existing project.</p>
 <p>quarto-preprint</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> add mvuorre/quarto-preprint</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>word count</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> add andrewheiss/quarto-wordcount</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>other possibly relevant functions</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> add andrewheiss/quarto-wordcount</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> add andrewheiss/quarto-wordcount</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Then I would create and edit the details of the _quarto.yml file in the root folder, so that they are relevant for your project.</p>
 <p>In addition, I would recommend:</p>
 <ul>
@@ -412,8 +410,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="package-management-with-renv-and-version-control-with-git">package management with renv() and version control with git</h2>
 <p>My sense is that there is a lot to learn at the start, which puts people off. But, if we only consider data analysis and not writing manuscripts, this feels like a no-brainer to me. In other words, for the purposes of data analysis, I would definitely incorporate renv() and git (as well as github) into your workflow. The benefits hugely outweigh the initial learning curve costs.</p>
 </section>
-<section id="is-writing-in-r-markdown-actually-any-better-than-writing-in-ms-word" class="level2">
-<h2 class="anchored" data-anchor-id="is-writing-in-r-markdown-actually-any-better-than-writing-in-ms-word">Is writing in R markdown actually any better than writing in MS Word?</h2>
+<section id="is-writing-in-quarto-actually-any-better-than-writing-in-ms-word" class="level2">
+<h2 class="anchored" data-anchor-id="is-writing-in-quarto-actually-any-better-than-writing-in-ms-word">Is writing in Quarto actually any better than writing in MS Word?</h2>
 <p>I don’t have that much experience writing manuscripts in R Markdown or Quarto, so it is still new to me at this point. My initial impression from writing a few manuscripts in this way along with reading a bunch of blog posts is as follows:</p>
 <ul>
 <li>You probably save no time overall compared to writing manuscripts in MS word, but you have a very different product.</li>
@@ -428,8 +426,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul></li>
 </ul>
 </section>
-<section id="and-what-about-collaboration-when-writing-in-r-markdown" class="level2">
-<h2 class="anchored" data-anchor-id="and-what-about-collaboration-when-writing-in-r-markdown">And what about collaboration when writing in R Markdown?</h2>
+<section id="and-what-about-collaboration-when-writing-in-quarto" class="level2">
+<h2 class="anchored" data-anchor-id="and-what-about-collaboration-when-writing-in-quarto">And what about collaboration when writing in Quarto?</h2>
 <p>Quarto can generate a word doc, amongst a range of other documents (pdf, .html etc.). So that’s good. But, if your collaborators only use MS Word and record edits via “track changes”, then you might have to re-do edits in Quarto. That is a clear negative of the current workflow.</p>
 <p>After decades of using word, however, I was ready for a change and felt it was time to encourage my lab to change also. So, the benefits outweighed the costs in my view. I opted to incorporate more edits into Quarto manually and version control those changes, in order to benefit from the much more substanial gains in computational reproducibility that Quarto offers. But I readily accept that that might not be the same calculation for everyone or for every project. In some cases, it might just be easier to use MS Word for manuscript preparation (or some other package) that is more familiar to the vast majority of the research team.</p>
 <div style="page-break-after: always;"></div>
