@@ -38,7 +38,8 @@ format:
     output-file: supplementary.pdf
     fontsize: 11pt
     mainfont: Libertinus Serif
-    section-numbering: "A."
+    toc: true
+    toc-depth: 3
 editor_options: 
   chunk_output_type: console
 ---

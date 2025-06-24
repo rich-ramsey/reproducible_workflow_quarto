@@ -200,6 +200,46 @@ knitr::kable(
 )
 ```
 
+## Referring to supplementary figures and tables ##
+
+And here is how you might refer to supplementary figures and tables in a way that preserves the link between the figure or table label in each output format (e.g., .html figure /table numbers just keep going, whereas the appendix/supplementary pdf label them as Table A.1, Figure A.1 etc.).
+
+There are at least two reasonably simple ways:
+
+1) You can do it like this:
+
+Here's the code:
+
+```markdown
+::: {.content-visible when-format="html"}
+See the supplementary analysis (@fig-s1 and @tbl-s1).
+:::
+::: {.content-visible when-format="typst"}
+See the supplementary analysis (Figure A.1 and Table A.1 in the supplementary materials).
+:::
+```
+And here's the output:
+
+::: {.content-visible when-format="html"}
+See the supplementary analysis (@fig-s1 and @tbl-s1).
+:::
+
+::: {.content-visible when-format="typst"}
+See the supplementary analysis (Figure A.1 and Table A.1 in the supplementary materials).
+:::
+
+2) Or use inline conditionals for shorter references:
+
+Here's the code:
+
+```markdown
+The model diagnostics [are shown in @fig-s1]{.content-visible when-format="html"}[are shown in Figure A.1 of the supplementary materials]{.content-visible when-format="typst"}.
+```
+
+And here's the output:
+
+The model diagnostics [are shown in @fig-s1]{.content-visible when-format="html"}[are shown in Figure A.1 of the supplementary materials]{.content-visible when-format="typst"}.
+
 # Discussion
 
 # Disclosures #
